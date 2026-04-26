@@ -58,8 +58,26 @@
   .query-table tr:hover td{background:var(--surface);}
   .q-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);width:30px;}
   .q-focus{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap;}
+  .score-table{width:100%;border-collapse:collapse;font-size:13px;margin:1.5rem 0;}
+  .score-table th{text-align:center;padding:8px 12px;font-size:11px;font-weight:500;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.05em;}
+  .score-table th:first-child{text-align:left;}
+  .score-table td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:center;}
+  .score-table td:first-child{text-align:left;color:var(--text);}
+  .score-table tr:last-child td{border-bottom:none;font-weight:500;background:var(--surface);}
+  .score-table tr:hover td{background:var(--surface);}
+  .finding-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:10px;}
+  .finding-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .finding-model{font-family:'DM Mono',monospace;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:500;}
+  .finding-claude{background:rgba(96,212,240,0.12);color:var(--accent);}
+  .finding-chatgpt{background:rgba(96,240,160,0.12);color:var(--ok);}
+  .finding-gemini{background:rgba(240,184,96,0.12);color:var(--warning);}
+  .finding-text{font-size:13px;color:rgba(240,237,230,0.75);}
   .insight-box{margin:1.5rem 0;padding:1.25rem;border-radius:0 8px 8px 0;border-left:2px solid var(--accent);background:var(--surface);font-size:13px;color:rgba(240,237,230,0.75);}
   .insight-box strong{color:var(--accent);font-weight:500;}
+  .insight-box.warning{border-left-color:var(--warning);}
+  .insight-box.warning strong{color:var(--warning);}
+  .insight-box.ok{border-left-color:var(--ok);}
+  .insight-box.ok strong{color:var(--ok);}
   .coming-soon{border:1px dashed var(--border);border-radius:12px;padding:3rem;text-align:center;color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;margin:2rem 0;}
   .phase-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin:2rem 0;}
   .phase-card{border:1px solid var(--border);border-radius:12px;padding:1.25rem;background:var(--surface);position:relative;overflow:hidden;}
@@ -121,7 +139,6 @@
       <div class="stat-card"><div class="stat-label">Scoring dimensions</div><div class="stat-value">6</div></div>
     </div>
 
-    <h3>Scoring rubric — 6 dimensions</h3>
     <div class="rubric-grid">
       <div class="rubric-card"><div class="rubric-num">01</div><div class="rubric-title">Accuracy</div><div class="rubric-desc">Is the information factually correct in both languages?</div></div>
       <div class="rubric-card"><div class="rubric-num">02</div><div class="rubric-title">Spanish quality</div><div class="rubric-desc">Grammar, vocabulary, and natural fluency — not robotic translation.</div></div>
@@ -154,12 +171,10 @@
     <div class="section-label">Query list</div>
     <h2>16 expert-domain queries across 2 categories</h2>
     <p>Each query is run in English first, then in Spanish, across all three models. The English run establishes a quality baseline; the Spanish run reveals degradation or inconsistency.</p>
-
     <div class="kw-tabs">
       <div class="kw-tab active" onclick="switchTab('healthcare',this)">Healthcare / medical billing</div>
       <div class="kw-tab" onclick="switchTab('apple',this)">Apple products & services</div>
     </div>
-
     <div id="healthcare" class="kw-panel active">
       <table class="query-table">
         <tr><th>#</th><th>Query</th><th>Focus area</th></tr>
@@ -173,7 +188,6 @@
         <tr><td class="q-num">08</td><td>What is an NPI number and why does my doctor need one?</td><td class="q-focus">Technical accuracy</td></tr>
       </table>
     </div>
-
     <div id="apple" class="kw-panel">
       <table class="query-table">
         <tr><th>#</th><th>Query</th><th>Focus area</th></tr>
@@ -187,27 +201,75 @@
         <tr><td class="q-num">08</td><td>I think my iPhone was hacked — what do I do?</td><td class="q-focus">Safety, urgency, tone</td></tr>
       </table>
     </div>
-
-    <div class="insight-box">
-      <strong>Why these queries?</strong> Each was selected to stress-test a specific quality dimension. Query 7 in healthcare tests whether models maintain appropriate tone when patients are frustrated. Query 8 in Apple tests whether urgency and safety-critical instructions survive translation without losing critical steps.
-    </div>
   </div>
 </section>
 
 <section id="findings">
   <div class="container">
-    <div class="section-label">Findings — Healthcare category</div>
-    <h2>How do AI models handle medical terminology in Spanish?</h2>
-    <p>Results will be documented here as the audit progresses. Each entry includes the English response, the Spanish response, scores across all six dimensions, and annotated observations from the auditor.</p>
-    <div class="coming-soon">[ Audit in progress — findings being documented ]</div>
+    <div class="section-label">Findings — Category 1: Healthcare / Medical Billing · Complete</div>
+    <h2>How AI models handle US medical terminology in Spanish</h2>
+    <p>Eight queries tested across prior authorization, claim denials, Medicare/Medicaid, EOB interpretation, physician credentialing, cost-sharing terminology, billing disputes, and NPI numbers. The auditor brings 13+ years of medical billing expertise to the evaluation.</p>
+
+    <h3 style="margin-top:2rem;">Score summary</h3>
+    <table class="score-table">
+      <tr>
+        <th style="text-align:left;">Query</th>
+        <th>Claude</th><th>ChatGPT</th><th>Gemini</th>
+      </tr>
+      <tr><td>Q1 — Prior authorization</td><td style="color:#a0e060;">28</td><td style="color:var(--ok);">30</td><td style="color:var(--warning);">22</td></tr>
+      <tr><td>Q2 — Claim denial options</td><td style="color:#a0e060;">29</td><td style="color:var(--ok);">30</td><td style="color:var(--danger);">19</td></tr>
+      <tr><td>Q3 — Medicare vs Medicaid</td><td style="color:var(--ok);">30</td><td style="color:var(--ok);">30</td><td style="color:#a0e060;">26</td></tr>
+      <tr><td>Q4 — EOB explanation</td><td style="color:#a0e060;">29</td><td style="color:var(--ok);">30</td><td style="color:#a0e060;">26</td></tr>
+      <tr><td>Q5 — Physician credentialing</td><td style="color:var(--ok);">30</td><td style="color:var(--ok);">30</td><td style="color:#a0e060;">26</td></tr>
+      <tr><td>Q6 — Copay/deductible/coinsurance</td><td style="color:var(--ok);">30</td><td style="color:#a0e060;">29</td><td style="color:#a0e060;">28</td></tr>
+      <tr><td>Q7 — Medical bill appeal</td><td style="color:var(--ok);">30</td><td style="color:var(--ok);">30</td><td style="color:#a0e060;">28</td></tr>
+      <tr><td>Q8 — NPI number</td><td style="color:var(--ok);">30</td><td style="color:#a0e060;">29</td><td style="color:var(--ok);">30</td></tr>
+      <tr>
+        <td><strong>Total / 240</strong></td>
+        <td style="color:var(--ok);font-size:1.1rem;">236</td>
+        <td style="color:var(--ok);font-size:1.1rem;">238</td>
+        <td style="color:var(--warning);font-size:1.1rem;">205</td>
+      </tr>
+    </table>
+
+    <h3 style="margin-top:2.5rem;">Key findings</h3>
+
+    <div class="finding-card">
+      <div class="finding-header">
+        <span class="finding-model finding-gemini">Gemini · Critical finding</span>
+      </div>
+      <p class="finding-text">Gemini consistently applied Latin American regional context to US-specific healthcare queries. In Q1 and Q2, responses referenced EPS (Colombia), Isapre (Chile), CONDUSEF (Mexico), and Superintendencia de Salud (Chile/Colombia) — regulatory bodies that do not exist or apply in the United States. A US Latino patient acting on this information would contact entirely wrong regulatory agencies. This is a systemic cultural localization failure, not an isolated error, appearing in 4 of the first 5 queries. Gemini also truncated responses mid-sentence twice (Q4 and Q5), representing a completeness failure.</p>
+    </div>
+
+    <div class="finding-card">
+      <div class="finding-header">
+        <span class="finding-model finding-chatgpt">ChatGPT · Strongest overall</span>
+      </div>
+      <p class="finding-text">ChatGPT was the most consistently strong performer across all 8 queries — US-focused, fluent, complete, and notably proactive in offering follow-up assistance tailored to the user's specific situation. In Q2, it explicitly mentioned the Florida Office of Insurance Regulation. In Q7, it correctly flagged the "don't pay while disputing" principle and offered to draft an appeal letter. Scored 30/30 on 6 of 8 queries.</p>
+    </div>
+
+    <div class="finding-card">
+      <div class="finding-header">
+        <span class="finding-model finding-claude">Claude · Strongest on Florida-specific detail</span>
+      </div>
+      <p class="finding-text">Claude performed closely behind ChatGPT overall but led on provider-facing technical accuracy. In Q5 (physician credentialing), Claude was the only model to mention CAQH, PECOS, the NPDB, and the Florida Medicaid Web Portal by name — details that matter significantly to a practice administrator in Central Florida. In Q7, Claude correctly identified balance billing as potentially illegal under Florida law and directed users to the appropriate state regulatory body.</p>
+    </div>
+
+    <div class="insight-box warning">
+      <strong>Headline insight:</strong> Gemini's pan-Latin American framing is a significant real-world risk for US Spanish-speaking healthcare consumers. The model appears to default to a generalized "Hispanic" audience rather than correctly identifying the US regulatory and insurance context from the query language. This is not a fluency problem — Gemini's Spanish quality improved across the audit — it is a cultural localization and safety problem.
+    </div>
+
+    <div class="insight-box ok">
+      <strong>Positive finding:</strong> All three models correctly identified that prior authorization, EOB, and NPI are US-specific constructs and did not translate or substitute them with local equivalents. Gemini's issues were specifically with regulatory bodies and insurance system names — not with core clinical terminology.
+    </div>
   </div>
 </section>
 
 <section>
   <div class="container">
-    <div class="section-label">Findings — Apple products category</div>
+    <div class="section-label">Findings — Category 2: Apple Products & Services</div>
     <h2>Does technical support quality degrade in Spanish?</h2>
-    <p>Apple product support queries tested for step accuracy, completeness of troubleshooting paths, and whether safety-critical instructions survive translation intact.</p>
+    <p>Eight Apple support queries tested for step accuracy, completeness of troubleshooting paths, tone appropriateness, and whether safety-critical instructions survive translation intact. The auditor brings 12+ years of Apple T2 support experience to the evaluation.</p>
     <div class="coming-soon">[ Audit in progress — findings being documented ]</div>
   </div>
 </section>
@@ -216,16 +278,16 @@
   <div class="container">
     <div class="section-label">Results & analysis</div>
     <h2>Patterns, scores, and takeaways</h2>
-    <p>Final scores, model comparisons, and key insights will be published here upon audit completion.</p>
-    <div class="coming-soon">[ Coming upon audit completion ]</div>
+    <p>Final cross-category scores, model comparisons, and complete insights will be published here upon completion of the Apple products category.</p>
+    <div class="coming-soon">[ Coming upon Apple category completion ]</div>
 
     <div style="margin-top:3rem;">
       <div class="section-label">Project roadmap</div>
       <div class="phase-grid">
         <div class="phase-card done"><div class="phase-number">01</div><div class="phase-title">Framework & rubric</div><div class="phase-status status-done">✓ Complete</div></div>
         <div class="phase-card done"><div class="phase-number">02</div><div class="phase-title">Query list finalized</div><div class="phase-status status-done">✓ Complete</div></div>
-        <div class="phase-card active"><div class="phase-number">03</div><div class="phase-title">Healthcare audit</div><div class="phase-status status-active">● In progress</div></div>
-        <div class="phase-card"><div class="phase-number">04</div><div class="phase-title">Apple audit</div><div class="phase-status status-pending">○ Upcoming</div></div>
+        <div class="phase-card done"><div class="phase-number">03</div><div class="phase-title">Healthcare audit</div><div class="phase-status status-done">✓ Complete</div></div>
+        <div class="phase-card active"><div class="phase-number">04</div><div class="phase-title">Apple audit</div><div class="phase-status status-active">● In progress</div></div>
         <div class="phase-card"><div class="phase-number">05</div><div class="phase-title">Analysis & publish</div><div class="phase-status status-pending">○ Upcoming</div></div>
       </div>
     </div>
